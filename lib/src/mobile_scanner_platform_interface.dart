@@ -108,4 +108,9 @@ abstract class MobileScannerPlatform extends PlatformInterface {
   Future<void> dispose() {
     throw UnimplementedError('dispose() has not been implemented.');
   }
+
+  /// Analyze of this [MobileScannerPlatform] instance.
+  Future<void> setAnalyzeImage(bool isAnalyze) {
+    throw UnimplementedError('setAnalyzeImage() has not been implemented.');
+  }
 }

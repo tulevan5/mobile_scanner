@@ -26,8 +26,8 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
     this.returnImage = false,
     this.torchEnabled = false,
     this.useNewCameraSelector = false,
-  })  : detectionTimeoutMs =
-            detectionSpeed == DetectionSpeed.normal ? detectionTimeoutMs : 0,
+    this.isAnalyze = true,
+  })  : detectionTimeoutMs = detectionSpeed == DetectionSpeed.normal ? detectionTimeoutMs : 0,
         assert(
           detectionTimeoutMs >= 0,
           'The detection timeout must be greater than or equal to 0.',
@@ -98,11 +98,12 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
   final bool useNewCameraSelector;
 
   /// The internal barcode controller, that listens for detected barcodes.
-  final StreamController<BarcodeCapture> _barcodesController =
-      StreamController.broadcast();
+  final StreamController<BarcodeCapture> _barcodesController = StreamController.broadcast();
 
   /// Get the stream of scanned barcodes.
   Stream<BarcodeCapture> get barcodes => _barcodesController.stream;
+
+  final bool isAnalyze;
 
   StreamSubscription<BarcodeCapture?>? _barcodesSubscription;
   StreamSubscription<TorchState>? _torchStateSubscription;
@@ -121,8 +122,7 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
   }
 
   void _setupListeners() {
-    _barcodesSubscription = MobileScannerPlatform.instance.barcodesStream
-        .listen((BarcodeCapture? barcode) {
+    _barcodesSubscription = MobileScannerPlatform.instance.barcodesStream.listen((BarcodeCapture? barcode) {
       if (_barcodesController.isClosed || barcode == null) {
         return;
       }
@@ -130,8 +130,7 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
       _barcodesController.add(barcode);
     });
 
-    _torchStateSubscription = MobileScannerPlatform.instance.torchStateStream
-        .listen((TorchState torchState) {
+    _torchStateSubscription = MobileScannerPlatform.instance.torchStateStream.listen((TorchState torchState) {
       if (_isDisposed) {
         return;
       }
@@ -139,8 +138,7 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
       value = value.copyWith(torchState: torchState);
     });
 
-    _zoomScaleSubscription = MobileScannerPlatform.instance.zoomScaleStateStream
-        .listen((double zoomScale) {
+    _zoomScaleSubscription = MobileScannerPlatform.instance.zoomScaleStateStream.listen((double zoomScale) {
       if (_isDisposed) {
         return;
       }
@@ -163,8 +161,7 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
       throw const MobileScannerException(
         errorCode: MobileScannerErrorCode.controllerDisposed,
         errorDetails: MobileScannerErrorDetails(
-          message:
-              'The MobileScannerController was used after it has been disposed.',
+          message: 'The MobileScannerController was used after it has been disposed.',
         ),
       );
     }
@@ -240,8 +237,7 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
       throw const MobileScannerException(
         errorCode: MobileScannerErrorCode.controllerDisposed,
         errorDetails: MobileScannerErrorDetails(
-          message:
-              'The MobileScannerController was used after it has been disposed.',
+          message: 'The MobileScannerController was used after it has been disposed.',
         ),
       );
     }
@@ -269,13 +265,13 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
       returnImage: returnImage,
       torchEnabled: torchEnabled,
       useNewCameraSelector: useNewCameraSelector,
+      isAnalyze: isAnalyze,
     );
 
     try {
       _setupListeners();
 
-      final MobileScannerViewAttributes viewAttributes =
-          await MobileScannerPlatform.instance.start(
+      final MobileScannerViewAttributes viewAttributes = await MobileScannerPlatform.instance.start(
         options,
       );
 
@@ -334,9 +330,7 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
     // If the device does not have a torch, do not report "off".
     value = value.copyWith(
       isRunning: false,
-      torchState: oldTorchState == TorchState.unavailable
-          ? TorchState.unavailable
-          : TorchState.off,
+      torchState: oldTorchState == TorchState.unavailable ? TorchState.unavailable : TorchState.off,
     );
 
     await MobileScannerPlatform.instance.stop();
@@ -362,9 +356,7 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
     final CameraFacing cameraDirection = value.cameraDirection;
 
     await start(
-      cameraDirection: cameraDirection == CameraFacing.front
-          ? CameraFacing.back
-          : CameraFacing.front,
+      cameraDirection: cameraDirection == CameraFacing.front ? CameraFacing.back : CameraFacing.front,
     );
   }
 
@@ -419,5 +411,9 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
     super.dispose();
 
     await MobileScannerPlatform.instance.dispose();
+  }
+
+  Future<void> setAnalyzeImage(bool isAnalyze) async {
+    await MobileScannerPlatform.instance.setAnalyzeImage(isAnalyze);
   }
 }

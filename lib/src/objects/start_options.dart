@@ -15,6 +15,7 @@ class StartOptions {
     required this.returnImage,
     required this.torchEnabled,
     required this.useNewCameraSelector,
+    required this.isAnalyze,
   });
 
   /// The direction for the camera.
@@ -43,6 +44,8 @@ class StartOptions {
   /// This option is only supported on Android. Other platforms will ignore this option.
   final bool useNewCameraSelector;
 
+  final bool isAnalyze;
+
   Map<String, Object?> toMap() {
     return <String, Object?>{
       if (cameraResolution != null)
@@ -51,13 +54,13 @@ class StartOptions {
           cameraResolution!.height.toInt(),
         ],
       'facing': cameraDirection.rawValue,
-      if (formats.isNotEmpty)
-        'formats': formats.map((f) => f.rawValue).toList(),
+      if (formats.isNotEmpty) 'formats': formats.map((f) => f.rawValue).toList(),
       'returnImage': returnImage,
       'speed': detectionSpeed.rawValue,
       'timeout': detectionTimeoutMs,
       'torch': torchEnabled,
       'useNewCameraSelector': useNewCameraSelector,
+      'isAnalyze': isAnalyze,
     };
   }
 }

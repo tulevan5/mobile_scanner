@@ -129,6 +129,7 @@ class MobileScannerHandler(
             "setScale" -> setScale(call, result)
             "resetScale" -> resetScale(result)
             "updateScanWindow" -> updateScanWindow(call, result)
+            "isAnalyze" -> setAnalyze(call, result)
             else -> result.notImplemented()
         }
     }
@@ -281,5 +282,11 @@ class MobileScannerHandler(
         mobileScanner?.scanWindow = call.argument<List<Float>?>("rect")
 
         result.success(null)
+    }
+
+    private fun setAnalyze(call: MethodCall, result: MethodChannel.Result) {
+        mobileScanner?.isAnalyze = call.arguments as Boolean
+
+        result.success(true)
     }
 }

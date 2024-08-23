@@ -90,6 +90,8 @@ public class MobileScannerPlugin: NSObject, FlutterPlugin {
             resetScale(call, result)
         case "updateScanWindow":
             updateScanWindow(call, result)
+        case "isAnalyze":
+            setAnalyzeImage(call, result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -187,6 +189,11 @@ public class MobileScannerPlugin: NSObject, FlutterPlugin {
                                 message: "Error while zooming.",
                                 details: nil))
         }
+    }
+    
+    private func setAnalyzeImage(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        mobileScanner.isAnalyze = (call.arguments as? Bool) ?? true
+        result(true)
     }
 
     /// Reset the zoomScale.

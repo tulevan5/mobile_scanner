@@ -27,6 +27,8 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
     /// Return image buffer with the Barcode event
     var returnImage: Bool = false
+    
+    var isAnalyze: Bool = true
 
     /// Default position of camera
     var videoPosition: AVCaptureDevice.Position = AVCaptureDevice.Position.back
@@ -130,9 +132,13 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             print("Failed to get image buffer from sample buffer.")
             return
         }
+        
         latestBuffer = imageBuffer
         registry?.textureFrameAvailable(textureId)
-        
+        if !isAnalyze {
+            // Pause analyze
+            return
+        }
         let currentTime = Date().timeIntervalSince1970
         let eligibleForScan = currentTime > nextScanTime && !imagesCurrentlyBeingProcessed
         
@@ -316,6 +322,7 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         textureId = nil
         captureSession = nil
         device = nil
+        isAnalyze = true
     }
 
     /// Toggle the torch.

@@ -296,6 +296,11 @@ class MethodChannelMobileScanner extends MobileScannerPlatform {
   }
 
   @override
+  Future<void> setAnalyzeImage(bool isAnalyze) async {
+    await methodChannel.invokeMethod<void>('isAnalyze', isAnalyze);
+  }
+
+  @override
   Future<void> dispose() async {
     await stop();
   }
