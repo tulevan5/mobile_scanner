@@ -10,6 +10,13 @@ class BarcodeScannerSimple extends StatefulWidget {
 
 class _BarcodeScannerSimpleState extends State<BarcodeScannerSimple> {
   Barcode? _barcode;
+  MobileScannerController? _controller;
+
+  @override
+  void initState() {
+    _controller = MobileScannerController();
+    super.initState();
+  }
 
   Widget _buildBarcode(Barcode? value) {
     if (value == null) {
@@ -40,26 +47,50 @@ class _BarcodeScannerSimpleState extends State<BarcodeScannerSimple> {
     return Scaffold(
       appBar: AppBar(title: const Text('Simple scanner')),
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          MobileScanner(
-            onDetect: _handleBarcode,
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              alignment: Alignment.bottomCenter,
-              height: 100,
-              color: Colors.black.withOpacity(0.4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(child: Center(child: _buildBarcode(_barcode))),
-                ],
+      body: Builder(
+        builder: (context) {
+          return Stack(
+            children: [
+              MobileScanner(
+                controller: _controller,
+                onDetect: (barcodes) {
+                  if (mounted) {
+                    _controller?.setAnalyzeImage(false);
+                    setState(() {
+                      _barcode = barcodes.barcodes.firstOrNull;
+                    });
+                    if (_barcode != null) {
+                      Scaffold.of(context).showBottomSheet((builder) => Container(
+                        height: 300,
+                        color: Colors.red,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              _controller?.setAnalyzeImage(true);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Click next scan")),
+                      ));
+                    }
+                  }
+                },
               ),
-            ),
-          ),
-        ],
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  alignment: Alignment.bottomCenter,
+                  height: 100,
+                  color: Colors.black.withOpacity(0.4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(child: Center(child: _buildBarcode(_barcode))),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
       ),
     );
   }

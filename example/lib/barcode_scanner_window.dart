@@ -9,13 +9,11 @@ class BarcodeScannerWithScanWindow extends StatefulWidget {
   const BarcodeScannerWithScanWindow({super.key});
 
   @override
-  State<BarcodeScannerWithScanWindow> createState() =>
-      _BarcodeScannerWithScanWindowState();
+  State<BarcodeScannerWithScanWindow> createState() => _BarcodeScannerWithScanWindowState();
 }
 
-class _BarcodeScannerWithScanWindowState
-    extends State<BarcodeScannerWithScanWindow> {
-  final MobileScannerController controller = MobileScannerController();
+class _BarcodeScannerWithScanWindowState extends State<BarcodeScannerWithScanWindow> {
+  final MobileScannerController controller = MobileScannerController(isAnalyze: true);
 
   Widget _buildBarcodeOverlay() {
     return ValueListenableBuilder(
@@ -39,9 +37,7 @@ class _BarcodeScannerWithScanWindowState
             final scannedBarcode = barcodeCapture.barcodes.first;
 
             // No barcode corners, or size, or no camera preview size.
-            if (scannedBarcode.corners.isEmpty ||
-                value.size.isEmpty ||
-                barcodeCapture.size.isEmpty) {
+            if (scannedBarcode.corners.isEmpty || value.size.isEmpty || barcodeCapture.size.isEmpty) {
               return const SizedBox();
             }
 
@@ -64,10 +60,7 @@ class _BarcodeScannerWithScanWindowState
       valueListenable: controller,
       builder: (context, value, child) {
         // Not ready.
-        if (!value.isInitialized ||
-            !value.isRunning ||
-            value.error != null ||
-            value.size.isEmpty) {
+        if (!value.isInitialized || !value.isRunning || value.error != null || value.size.isEmpty) {
           return const SizedBox();
         }
 
@@ -89,30 +82,52 @@ class _BarcodeScannerWithScanWindowState
     return Scaffold(
       appBar: AppBar(title: const Text('With Scan window')),
       backgroundColor: Colors.black,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          MobileScanner(
-            fit: BoxFit.contain,
-            scanWindow: scanWindow,
-            controller: controller,
-            errorBuilder: (context, error, child) {
-              return ScannerErrorWidget(error: error);
-            },
-          ),
-          _buildBarcodeOverlay(),
-          _buildScanWindow(scanWindow),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              height: 100,
-              color: Colors.black.withOpacity(0.4),
-              child: ScannedBarcodeLabel(barcodes: controller.barcodes),
-            ),
-          ),
-        ],
+      body: Builder(
+        builder: (context) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              MobileScanner(
+                onDetect: (barcodes) {
+                  if (mounted) {
+                    // disable scan
+                    controller.setAnalyzeImage(false);
+                    Scaffold.of(context).showBottomSheet((context) => Container(
+                          height: 300,
+                          color: Colors.amber,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // enable scan
+                              controller.setAnalyzeImage(true);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Click next scan"),
+                          ),
+                        ));
+                                }
+                },
+                fit: BoxFit.contain,
+                scanWindow: scanWindow,
+                controller: controller,
+                errorBuilder: (context, error, child) {
+                  return ScannerErrorWidget(error: error);
+                },
+              ),
+              _buildBarcodeOverlay(),
+              _buildScanWindow(scanWindow),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  height: 100,
+                  color: Colors.black.withOpacity(0.4),
+                  child: ScannedBarcodeLabel(barcodes: controller.barcodes),
+                ),
+              ),
+            ],
+          );
+        }
       ),
     );
   }
@@ -137,7 +152,7 @@ class ScannerOverlay extends CustomPainter {
     final cutoutPath = Path()..addRect(scanWindow);
 
     final backgroundPaint = Paint()
-      ..color = Colors.black.withOpacity(0.5)
+      ..color = Colors.green.withOpacity(0.5)
       ..style = PaintingStyle.fill
       ..blendMode = BlendMode.dstOut;
 
@@ -170,9 +185,7 @@ class BarcodeOverlay extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (barcodeCorners.isEmpty ||
-        barcodeSize.isEmpty ||
-        cameraPreviewSize.isEmpty) {
+    if (barcodeCorners.isEmpty || barcodeSize.isEmpty || cameraPreviewSize.isEmpty) {
       return;
     }
 
@@ -214,7 +227,7 @@ class BarcodeOverlay extends CustomPainter {
     final cutoutPath = Path()..addPolygon(adjustedOffset, true);
 
     final backgroundPaint = Paint()
-      ..color = Colors.red.withOpacity(0.3)
+      ..color = Colors.green.withOpacity(0.3)
       ..style = PaintingStyle.fill
       ..blendMode = BlendMode.dstOut;
 

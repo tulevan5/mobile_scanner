@@ -33,7 +33,7 @@ class _BarcodeScannerWithOverlayState extends State<BarcodeScannerWithOverlay> {
         children: [
           Center(
             child: MobileScanner(
-              fit: BoxFit.contain,
+              fit: BoxFit.fitWidth,
               controller: controller,
               scanWindow: scanWindow,
               errorBuilder: (context, error, child) {
