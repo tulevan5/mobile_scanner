@@ -451,6 +451,14 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         scanner.process(image, completion: callback)
     }
 
+    func playBeepAndVibrate() {
+        AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+    }
+    
+    func playVibrate() {
+        AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+    }
+    
     var barcodesString: Array<String?>?
 
     //    /// Convert image buffer to jpeg

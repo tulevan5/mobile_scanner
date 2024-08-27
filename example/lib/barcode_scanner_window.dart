@@ -135,10 +135,7 @@ class _BarcodeScannerWithScanWindowState extends State<BarcodeScannerWithScanWin
     final width = MediaQuery.of(context).size.width;
     final scanWindow = Rect.fromLTWH(
       width / 2 - cutOutSize / 2 + borderOffset,
-      -_cutOutBottomOffset +
-          height / 2 -
-          cutOutSize / 2 +
-          borderOffset,
+      -_cutOutBottomOffset + height / 2 - cutOutSize / 2 + borderOffset,
       cutOutSize - borderWidth,
       cutOutSize - borderWidth,
     );
@@ -172,6 +169,7 @@ class _BarcodeScannerWithScanWindowState extends State<BarcodeScannerWithScanWin
                 if (mounted) {
                   // disable scan
                   controller.setAnalyzeImage(false);
+                  controller.playBeepAndVibrate();
                   Scaffold.of(context).showBottomSheet((context) => Container(
                         height: 300,
                         color: Colors.amber,

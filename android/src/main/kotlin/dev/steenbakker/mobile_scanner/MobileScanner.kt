@@ -540,4 +540,8 @@ class MobileScanner(
 
         stop() // Defer to the stop method, which disposes all resources anyway.
     }
+
+    fun playBeepAndVibrate() {
+        
+    }
 }

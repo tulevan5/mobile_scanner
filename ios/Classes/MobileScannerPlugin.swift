@@ -92,6 +92,10 @@ public class MobileScannerPlugin: NSObject, FlutterPlugin {
             updateScanWindow(call, result)
         case "isAnalyze":
             setAnalyzeImage(call, result)
+        case "beepAndVibrate":
+            playBeepAndVibrate(call, result)
+        case "vibrate":
+            playVibrate(call, result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -193,6 +197,16 @@ public class MobileScannerPlugin: NSObject, FlutterPlugin {
     
     private func setAnalyzeImage(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         mobileScanner.isAnalyze = (call.arguments as? Bool) ?? true
+        result(true)
+    }
+    
+    private func playBeepAndVibrate(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        mobileScanner.playBeepAndVibrate()
+        result(true)
+    }
+    
+    private func playVibrate(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        mobileScanner.playVibrate()        
         result(true)
     }
 
