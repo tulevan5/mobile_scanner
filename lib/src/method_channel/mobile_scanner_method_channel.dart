@@ -302,12 +302,12 @@ class MethodChannelMobileScanner extends MobileScannerPlatform {
 
   @override
   Future<void> playBeepAndVibrate() async {
-    await methodChannel.invokeMethod<void>('beepAndVibrate');
+    await methodChannel.invokeMethod('beepAndVibrate');
   }
 
   @override
   Future<void> playVibrate() async {
-    await methodChannel.invokeMethod<void>('vibrate');
+    await methodChannel.invokeMethod('vibrate');
   }
 
   @override
