@@ -34,6 +34,7 @@ import com.google.mlkit.vision.common.InputImage
 import dev.steenbakker.mobile_scanner.objects.DetectionSpeed
 import dev.steenbakker.mobile_scanner.objects.MobileScannerStartParameters
 import dev.steenbakker.mobile_scanner.utils.YuvToRgbConverter
+import dev.steenbakker.mobile_scanner.utils.BeepManager
 import io.flutter.view.TextureRegistry
 import java.io.ByteArrayOutputStream
 import kotlin.math.roundToInt
@@ -62,6 +63,7 @@ class MobileScanner(
     private var detectionTimeout: Long = 250
     private var returnImage = false
     var isAnalyze = true
+    private var beepManager: BeepManager? = null
 
     companion object {
         /**
@@ -275,6 +277,7 @@ class MobileScanner(
 
         lastScanned = null
         scanner = barcodeScannerFactory(barcodeScannerOptions)
+        beepManager = BeepManager(activity)
 
         val cameraProviderFuture = ProcessCameraProvider.getInstance(activity)
         val executor = ContextCompat.getMainExecutor(activity)
@@ -464,6 +467,10 @@ class MobileScanner(
         scanner?.close()
         scanner = null
         lastScanned = null
+
+        // Release the beepManager
+        beepManager?.close()
+        beepManager = null
     }
 
     private fun isStopped() = camera == null && preview == null
@@ -539,5 +546,17 @@ class MobileScanner(
         }
 
         stop() // Defer to the stop method, which disposes all resources anyway.
+    }
+
+    fun playBeepAndVibrate() {
+        beepManager?.setPlayBeep(true)
+        beepManager?.setVibrate(true)
+        beepManager?.playBeepSoundAndVibrate()
+    }
+
+    fun playVibrate() {
+        beepManager?.setPlayBeep(false)
+        beepManager?.setVibrate(true)
+        beepManager?.playBeepSoundAndVibrate()
     }
 }

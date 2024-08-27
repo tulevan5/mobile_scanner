@@ -416,4 +416,12 @@ class MobileScannerController extends ValueNotifier<MobileScannerState> {
   Future<void> setAnalyzeImage(bool isAnalyze) async {
     await MobileScannerPlatform.instance.setAnalyzeImage(isAnalyze);
   }
+
+  Future<void> playBeepAndVibrate() async {
+    await MobileScannerPlatform.instance.playBeepAndVibrate();
+  }
+
+  Future<void> playVibrate() async {
+    await MobileScannerPlatform.instance.playVibrate();
+  }
 }

@@ -130,6 +130,8 @@ class MobileScannerHandler(
             "resetScale" -> resetScale(result)
             "updateScanWindow" -> updateScanWindow(call, result)
             "isAnalyze" -> setAnalyze(call, result)
+            "beepAndVibrate" -> playBeepAndVibrate(call, result)
+            "vibrate" -> playVibrate(call, result)
             else -> result.notImplemented()
         }
     }
@@ -278,15 +280,23 @@ class MobileScannerHandler(
         }
     }
 
-    private fun updateScanWindow(call: MethodCall, result: MethodChannel.Result) {
-        mobileScanner?.scanWindow = call.argument<List<Float>?>("rect")
-
-        result.success(null)
-    }
-
     private fun setAnalyze(call: MethodCall, result: MethodChannel.Result) {
         mobileScanner?.isAnalyze = call.arguments as Boolean
-
         result.success(true)
+    }
+
+    private fun playBeepAndVibrate(call: MethodCall, result: MethodChannel.Result) {
+        mobileScanner?.playBeepAndVibrate()
+        result.success(true)
+    }
+
+    private fun playVibrate(call: MethodCall, result: MethodChannel.Result) {
+        mobileScanner?.playVibrate()
+        result.success(true)
+    }
+
+    private fun updateScanWindow(call: MethodCall, result: MethodChannel.Result) {
+        mobileScanner?.scanWindow = call.argument<List<Float>?>("rect")
+        result.success(null)
     }
 }

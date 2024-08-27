@@ -113,4 +113,14 @@ abstract class MobileScannerPlatform extends PlatformInterface {
   Future<void> setAnalyzeImage(bool isAnalyze) {
     throw UnimplementedError('setAnalyzeImage() has not been implemented.');
   }
+
+  /// Play sound & vibrate of this [MobileScannerPlatform] instance.
+  Future<void> playBeepAndVibrate() {
+    throw UnimplementedError('playSoundAndVibrate() has not been implemented.');
+  }
+
+  /// Play vibrate of this [MobileScannerPlatform] instance.
+  Future<void> playVibrate() {
+    throw UnimplementedError('playVibrate() has not been implemented.');
+  }
 }
