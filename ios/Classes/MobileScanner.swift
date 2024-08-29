@@ -16,6 +16,7 @@ typealias TorchModeChangeCallback = ((Int?) -> ())
 typealias ZoomScaleChangeCallback = ((Double?) -> ())
 
 public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, FlutterTexture {
+    var audioPlayer: AVAudioPlayer!
     /// Capture session of the camera
     var captureSession: AVCaptureSession?
 
@@ -453,6 +454,7 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
     func playBeepAndVibrate() {
         AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+        playSound().play()
     }
     
     func playVibrate() {
@@ -500,6 +502,39 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             return nil
         }
         return Unmanaged<CVPixelBuffer>.passRetained(latestBuffer)
+    }
+    
+    func playSound() -> AVAudioPlayer {
+        
+        do {
+            if #available(iOS 10.0, *) {
+                try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback,
+                                                                mode: AVAudioSession.Mode.default, options: [])
+            } else {
+                // Fallback on earlier versions
+            }
+        } catch _ {
+        }
+        
+        do {
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch _ {
+        }
+        let alertSound = NSURL(fileURLWithPath: Bundle.main.path(forResource: "beep", ofType: "wav")!)
+        let _: NSError?
+        do {
+            if audioPlayer == nil {
+                audioPlayer = try AVAudioPlayer(contentsOf: alertSound as URL)
+            }
+        } catch let error1 as NSError {
+            _ = error1
+            audioPlayer = nil
+        }
+        audioPlayer.prepareToPlay()
+        audioPlayer.volume = 0.5
+        
+        return audioPlayer
+        
     }
     
     struct MobileScannerStartParameters {
