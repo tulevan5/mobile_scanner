@@ -315,6 +315,7 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         for output in captureSession!.outputs {
             captureSession!.removeOutput(output)
         }
+        self.turnTorchOff()
 
         latestBuffer = nil
         device.removeObserver(self, forKeyPath: #keyPath(AVCaptureDevice.torchMode))
@@ -324,6 +325,8 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         captureSession = nil
         device = nil
         isAnalyze = true
+        audioPlayer = nil
+        
     }
 
     /// Toggle the torch.
@@ -378,6 +381,23 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         do {
             try device.lockForConfiguration()
             device.torchMode = .on
+            device.unlockForConfiguration()
+        } catch(_) {}
+    }
+    
+    /// Turn the torch on.
+    private func turnTorchOff() {
+        guard let device = self.device else {
+            return
+        }
+        
+        if (!device.hasTorch || !device.isTorchAvailable || !device.isTorchModeSupported(.off) || device.torchMode == .off) {
+            return
+        }
+        
+        do {
+            try device.lockForConfiguration()
+            device.torchMode = .off
             device.unlockForConfiguration()
         } catch(_) {}
     }
