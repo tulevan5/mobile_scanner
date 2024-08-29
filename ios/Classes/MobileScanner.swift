@@ -520,11 +520,11 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             try AVAudioSession.sharedInstance().setActive(true)
         } catch _ {
         }
-        let alertSound = NSURL(fileURLWithPath: Bundle.main.path(forResource: "beep", ofType: "wav")!)
+        let alertSound = Bundle.main.url(forResource: "camera_scan_beep", withExtension: "mp3")!
         let _: NSError?
         do {
             if audioPlayer == nil {
-                audioPlayer = try AVAudioPlayer(contentsOf: alertSound as URL)
+                audioPlayer = try AVAudioPlayer(contentsOf: alertSound)
             }
         } catch let error1 as NSError {
             _ = error1
