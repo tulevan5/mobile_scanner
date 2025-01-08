@@ -326,7 +326,6 @@ public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         device = nil
         isAnalyze = true
         audioPlayer = nil
-        
     }
 
     /// Toggle the torch.
